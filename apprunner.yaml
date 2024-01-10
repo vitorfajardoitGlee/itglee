@@ -1,0 +1,22 @@
+version: 1.0
+runtime: dotnet6
+build:
+  commands:
+    pre-build:
+      - scripts/prebuild.sh
+    build:
+      - dotnet publish -c Release -o out
+    post-build:
+      - scripts/postbuild.sh
+  env:
+    - name: Release
+      value: "itGlee"    
+run:
+  runtime-version: 6.0.9
+  command: dotnet out/itGlee.dll
+  network:
+    port: 8080
+    env: APP_PORT
+  env:
+    - name: ASPNETCORE_URLS
+      value: "http://*:8080"
