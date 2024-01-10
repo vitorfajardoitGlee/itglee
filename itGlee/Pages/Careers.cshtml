@@ -1,0 +1,24 @@
+﻿@page
+@model Career
+@{
+    ViewData["Title"] = "Careers";
+}
+<div id="main">
+    <partial name="_Header" />
+    <partial name="_CareerBanner" />
+    <div id="container" class="cd-main-content">
+        @if (ViewData["SuccessMessage"] != null)
+        {
+            <div class="success-feedback">Your submission has been sent. We will get in touch.</div>
+        }
+        <div class="c">
+            <partial name="_Jobs" />
+        </div>
+    </div>
+    <partial name="_Footer" />
+    <script type="text/javascript">
+        (function () {
+            initNav();
+        })();
+    </script>
+</div>
