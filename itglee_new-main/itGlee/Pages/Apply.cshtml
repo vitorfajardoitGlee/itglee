@@ -1,0 +1,92 @@
+﻿@page
+@model Apply
+@{
+    ViewData["Title"] = "Applying for " + Model.applyingposition.jobpositiondescription;
+}
+<div id="main">
+    <partial name="_Header" />
+    <div id="container" class="cd-main-content">
+        <div id="apply">
+            <div class="c">
+                <div class="breadcrumbs margin-y-m"><a onclick="history.back(2);">careers</a></div>
+                <!-- action="https://itgleeservices.azurewebsites.net/Email/sendemail_v1" -->
+                <partial name="_JobDescription" view-data="ViewData">
+                    <form method="post" id="itglee-form" enctype="multipart/form-data" data-value="@Model.applyingposition.position" class="padding-left-m">
+                        <div id="form-error" class="form-error hidden margin-y-m"></div>
+                        <div class="grid2">
+                            <div class="col1">
+                                <label for="form_name">Name</label>
+                                <input asp-for="form.name" />
+                            </div>
+                            <div class="col1">
+                                <label for="form_emailaddress">Email</label>
+                                <input asp-for="form.emailaddress" />
+                            </div>
+                            <div class="col2">
+                                <label for="files">Select a file</label>
+                                @Html.TextBox("files", null, new { type="file", @class="input-file", accept=".pdf,.docx,.doc,application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document", multiple=true})
+                            </div>
+                            <div>
+                            </div>
+                        </div>
+                        <input asp-for="applyingposition.id" type="hidden" />
+                        <div>
+                            <div id="form-loading" class="hidden"></div>
+                            <button type="submit" id="submission-button">Apply</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+    <partial name="_Footer" />
+
+    @section scripts{
+        <script>
+            (function () {
+                initNav();
+                initForm();
+            })();
+
+            document.getElementById("itglee-form").onsubmit = () => {
+                var errorContainer = document.getElementById("form-error");
+                var button = document.getElementById("submission-button");
+                var loadingSpinner = document.getElementById("form-loading");
+                loadingSpinner.classList.remove("hidden");
+                loadingSpinner.classList.add("loading");
+                button.classList.add("hidden");
+                errorContainer.innerText = "";
+                if (!errorContainer.classList.contains("hidden")) errorContainer.classList.add("hidden");
+                let formData = new FormData(document.forms[0]);
+                fetch('', {
+                    method: 'post',
+                    contentType: "multipart/form-data",
+                    dataType: "json",
+                    body: formData
+                })
+                    .then((response) => {
+                        return response.text();
+                    }).then((result) => {
+                        var res = JSON.parse(result);
+                        if (res.statusCode != 200) {
+                            errorContainer.classList.toggle("hidden");
+                            button.classList.remove("hidden");
+                            errorContainer.innerText = res.errorMessage;
+
+                            loadingSpinner.classList.add("hidden");
+                            loadingSpinner.classList.remove("loading");
+                        }
+                        else {
+                            window.location.href = "/Careers";
+                        }
+                    }).catch((error) => {
+                        button.classList.remove("hidden");
+                        loadingSpinner.classList.add("hidden");
+                        loadingSpinner.classList.remove("loading");
+                        console.log(error);
+                    });
+                return false;
+            };
+        </script>
+    }
+</div>
+
